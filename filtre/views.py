@@ -3,36 +3,65 @@ from filtre.models import Division
 from filtre.models import Profit_center
 from filtre.models import Organisation
 import datetime
-
-
+from rest_framework import viewsets
+from filtre.serializers import DivisionSerializer
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
 
 
 # Create your views here.
 
 
+""" class DivisionSet(viewsets.ModelViewSet):
+    queryset = Division.objects.all()
+    serializer_class = DivisionSerializer
+    #on filtre sur des champs specifiques
+    filterset_fields = ['name']
+    search_fields = ['name'] """
 #creation des API
+
+""" @csrf_exempt
+def DivisionAPI(request):
+    if request.method=='GET':
+        divisions = Division.objects.all()
+        division_serializer = DivisionSerializer(divisions, many=True)
+        return JsonResponse(division_serializer.data, safe=False)
+    elif request.method == 'POST':
+        division_data=JSONParser().parse(request)
+        division_serializer = DivisionSerializer(data=division_data)
+        if division_serializer.is_valid():
+            division_serializer.save()
+            return JsonResponse("Added Sucessfully!!", safe=False)
+        return JsonResponse("Failed to Add", safe=False)
+    elif request.method == 'PUT':
+        division_data =JSONParser().parse(request)
+        division= Division.objects.get(name=division_data['name'])
+        division_serializer=DivisionSerializer(division,data=division_data)
+        if division_serializer.is_valid():
+            division_serializer.save()
+            return JsonResponse("Update Sucessfully!!", safe=False)
+        return JsonResponse("Failed to Update", safe=False)
+    elif request.method == 'DELETE':
+        division= Division.objects.get(name=Division.name)
+        division.delete()
+        return JsonResponse("Deleted Sucessfully!!", safe=False) """
+
+
+
+
+
 
 def division_list(request):
  
     divisions = Division.objects.all()
-    #json
-    #je transforme variable divisions en liste dans un dictionnaire
-    #json == dictionnary
-    # data ={'Results': list(divisions.values("name","description"))}
     data ={'Results': list(divisions.values("name"))}
-
-    #je dois retourner data en JsonResponse 
     return JsonResponse(data)
-    # return render(request,'home/index.html', context)
 
-#ajouter un fichier urls.py dans l'application 
-#lier urls de l'application filter au urls du projet
 
 
 def division_details(request,id):
     division = get_object_or_404(Division,pk=id)
-    #result traja3li sous forme dictionary (json)
     data = { 'Results': {
         "name":division.name,
         "description":division.description } }
@@ -72,3 +101,6 @@ def filter_range(request):
         last_n.append(result)
 
     return JsonResponse(last_n, safe=False)
+
+
+
