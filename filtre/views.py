@@ -2,12 +2,20 @@ from django.shortcuts import render,get_object_or_404
 from filtre.models import Division
 from filtre.models import Profit_center
 from filtre.models import Organisation
+from django.db.models import Q
+
 import datetime
 from rest_framework import viewsets
 from filtre.serializers import DivisionSerializer
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
+import json
+from order_past.models import Order_past_per_divsion
+from order_past.models import Order_past_per_cp
+from order_past.models import Order_past_per_organisme
+
+from django.db.models import Sum
 
 
 # Create your views here.
@@ -101,6 +109,89 @@ def filter_range(request):
         last_n.append(result)
 
     return JsonResponse(last_n, safe=False)
+
+def filtre_result(request):
+  
+   
+
+    json_body = json.loads(request.body)
+    
+
+    order_past_per_divsion = Order_past_per_divsion.objects.all()
+    order_past_per_cp = Order_past_per_cp.objects.all()
+    order_past_per_organisme = Order_past_per_organisme.objects.all()
+
+
+
+    division = json_body.get("division")
+    print (division)
+    
+    if division:
+        query = Q(division=division[0])
+        for div in division:
+            query = query | Q(division=div)
+
+    if query:
+        order_past_per_divsion = order_past_per_divsion.filter(query)
+
+
+
+
+    profit_center = json_body.get("profit_center")
+    print (profit_center)
+
+    if profit_center:
+        query_cp = Q(cp=profit_center[0])
+        for item in profit_center:
+            query_cp = query_cp | Q(cp=item)
+
+    if query_cp:
+        order_past_per_cp = order_past_per_cp.filter(query_cp)
+
+
+
+
+    organisation = json_body.get("organisation")
+    print (organisation)
+
+    if organisation:
+        query_organisme = Q(organisme=organisation[0])
+        for item in organisation:
+            query_organisme = query_organisme | Q(organisme=item)
+
+    if query_organisme:
+        order_past_per_organisme = order_past_per_organisme.filter(query_organisme)
+
+
+
+
+    week_year = json_body.get("week_year")
+    print (week_year)
+    
+    if week_year:
+        new_list = week_year[0].split("_")
+        query_week_year = Q(week=new_list[0], year=new_list[1])
+        for item in week_year:  
+                new_list = item.split("_")
+                print(new_list)
+                query_week_year = query_week_year | Q(week=new_list[0], year=new_list[1])
+    if query_week_year:
+        order_past_per_divsion = order_past_per_divsion.filter(query_week_year)
+        order_past_per_cp = order_past_per_cp.filter(query_week_year)
+        order_past_per_organisme = order_past_per_organisme.filter(query_week_year)
+
+        
+    
+   
+
+    # return JsonResponse()
+    data = {}
+    data['division'] = list(order_past_per_divsion.values())
+    data['profit_center'] = list(order_past_per_cp.values())
+    data['organisation'] = list(order_past_per_organisme.values())
+
+
+    return JsonResponse(data, safe=False)
 
 
 

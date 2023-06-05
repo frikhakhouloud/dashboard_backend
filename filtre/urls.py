@@ -13,6 +13,8 @@ urlpatterns = [
     path('profit/',views.profit_list,name='home'),
     path('organisation/',views.organisation_list,name='home'),
     path('range/',views.filter_range,name='home'),
+    path('result/',views.filtre_result,name='home'),
+
 
     # re_path('divisionAPI/$',views.DivisionAPI),
     # re_path('divisionAPI/',views.DivisionAPI), 
