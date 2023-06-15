@@ -110,10 +110,9 @@ def filter_range(request):
 
     return JsonResponse(last_n, safe=False)
 
+@csrf_exempt
 def filtre_result(request):
   
-   
-
     json_body = json.loads(request.body)
     
 
