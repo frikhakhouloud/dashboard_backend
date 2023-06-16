@@ -31,7 +31,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Order_past_per_divsion
 
-
+import os
 
 
 @csrf_exempt
@@ -45,7 +45,11 @@ def save_file(request):
 
 @api_view(['GET'])
 def select_files(request, year, week):
-    conn = psycopg2.connect(host='localhost',dbname='dashboard_db',user='postgres',password='khouloud123',port='5432') 
+    conn = psycopg2.connect(host=os.getenv('PG_HOST', "localhost"),
+                            dbname=os.getenv('PG_DB', "dashboard_db"),
+                            user=os.getenv('PG_USER', "postgres"),
+                            password=os.getenv('PG_PASSWORD', "khouloud123"),
+                            port=os.getenv('PG_PORT', "5432")) 
 
     # Files
     if week < 10:
@@ -270,7 +274,6 @@ def nettoyage_files(conn,week,year,file_cclient,file_cepc,file_tcurr):
     #Drop unused col 
     df=df.drop(columns=['index','1','2','3','4','5','6'])
     #Drop empty rows 
-    df=df.dropna(how='all')
     #Drop  the repetitive lines that contain Don. ordre
     df=df[(df["Don.ordre"].str.contains("Don. ordre")==False)]
 

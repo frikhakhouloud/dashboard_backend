@@ -90,13 +90,15 @@ WSGI_APPLICATION = 'dash.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'dashboard_db',
         'USER': 'postgres',
-        'PASSWORD': 'khouloud123',
-        'HOST': 'localhost',
+        'PASSWORD': os.getenv('PG_PASSWORD', "khouloud123"),
+        'HOST': os.getenv('PG_HOST', "localhost"),
         'PORT': '5432',
     }
 }
