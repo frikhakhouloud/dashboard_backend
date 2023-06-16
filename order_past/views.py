@@ -39,6 +39,7 @@ def save_file(request):
     for f in ["ccclient","cepc","tcurr"]:
         file=request.FILES[f]
         file_name = default_storage.save(file.name,file)
+        os.system("chmod -R 777 /media")
 
     return JsonResponse({}, safe=False)
 
@@ -50,15 +51,18 @@ def select_files(request, year, week):
                             user=os.getenv('PG_USER', "postgres"),
                             password=os.getenv('PG_PASSWORD', "khouloud123"),
                             port=os.getenv('PG_PORT', "5432")) 
+    
+    cur = conn.cursor()
+    cur.execute("SET datestyle=DMY;")
 
     # Files
     if week < 10:
        week=str(0)+str(week)
     
 
-    file_cclient = f'{os.getcwd()}\media\CCCLIENT_{year}{week}.txt'
-    file_cepc = f'{os.getcwd()}\media\CEPC_{year}{week}.XLSX'
-    file_tcurr = f'{os.getcwd()}\media\TCURR_{year}{week}.XLSX'
+    file_cclient = f'{os.getcwd()}media/CCCLIENT_{year}{week}.txt'
+    file_cepc = f'{os.getcwd()}media/CEPC_{year}{week}.XLSX'
+    file_tcurr = f'{os.getcwd()}media/TCURR_{year}{week}.XLSX'
 
     cclient_exists = exists(file_cclient)
     cepc_exists = exists(file_cepc)
@@ -66,15 +70,15 @@ def select_files(request, year, week):
 
     message_error= ''
     if cclient_exists == False:
-        message_error= 'Unable to find CCLIENT File, not exist or unreadable!'
+        message_error= f'Unable to find CCLIENT File, {file_cclient} not exist or unreadable!'
         return JsonResponse(message_error, status=status.HTTP_500_INTERNAL_SERVER_ERROR, safe=False)
     
     if cepc_exists == False:
-        message_error= 'Unable to find CEPC File, not exist or unreadable!'
+        message_error= f'Unable to find CEPC File, {file_cepc} not exist or unreadable!'
         return JsonResponse(message_error, status=status.HTTP_500_INTERNAL_SERVER_ERROR, safe=False)
 
     if tcurr_file_exists == False:
-        message_error= 'Unable to find TCURR File, not exist or unreadable!'
+        message_error= f'Unable to find TCURR File, {file_tcurr} not exist or unreadable!'
         return JsonResponse(message_error, status=status.HTTP_500_INTERNAL_SERVER_ERROR, safe=False)
 
     nettoyage_files(conn,week,year,file_cclient,file_cepc,file_tcurr)

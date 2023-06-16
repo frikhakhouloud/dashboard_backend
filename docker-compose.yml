@@ -8,6 +8,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - db:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
   dashbord-backend:
     build:
       context: .

@@ -1,5 +1,5 @@
 FROM python:3.10.12-bookworm
-
+USER root
 COPY manage.py /
 COPY dash /dash
 COPY filtre /filtre
