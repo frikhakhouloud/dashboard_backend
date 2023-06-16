@@ -21,6 +21,13 @@ services:
       - PG_DB=dashboard_db
     ports:
       - "8000:8000"
+  dashbord-frontend:
+    build:
+      context: ../dashboard_frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "4200:4200"
 volumes:
   db:
     driver: local
