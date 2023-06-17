@@ -7,7 +7,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - db:/var/lib/postgresql/data
+      - /C/Users/khouloud/Desktop/Django/denv/base:/var/lib/postgresql/data
     ports:
       - "5433:5432"
   dashbord-backend:
@@ -30,6 +30,3 @@ services:
     restart: always
     ports:
       - "4200:4200"
-volumes:
-  db:
-    driver: local

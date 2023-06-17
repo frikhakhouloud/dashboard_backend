@@ -1,0 +1,4 @@
+Sous le repertoire dashboard_backend
+
+lancer la commande :
+COMPOSE_CONVERT_WINDOWS_PATHS=1 docker-compose up --build
