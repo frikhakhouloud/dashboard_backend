@@ -7,6 +7,7 @@ import numpy as np
 from io import StringIO
 import psycopg2
 import json
+from django.db.models import Q
 
 from django.db.models import Sum
 
@@ -617,6 +618,41 @@ def cost(request):
 def count_order_par_division(request, *args, **kwargs):
     if request.method == 'GET':
         queryset2 = Order_past_per_divsion.objects.all()
+
+        json_body = None
+        try:
+            json_body = json.loads(request.body)
+        except:
+            pass
+
+        division = None
+        week_year = None
+        if json_body:
+            division = json_body.get("division")
+            week_year = json_body.get("week_year")
+
+        query = None
+        if division:
+            query = Q(division=division[0])
+            for div in division:
+                query = query | Q(division=div)
+
+        if query:
+            queryset2 = queryset2.filter(query)
+
+
+        
+        query_week_year = None
+        if week_year:
+            new_list = week_year[0].split("_")
+            query_week_year = Q(week=new_list[0], year=new_list[1])
+            for item in week_year:  
+                    new_list = item.split("_")
+                    query_week_year = query_week_year | Q(week=new_list[0], year=new_list[1])
+        if query_week_year:
+            queryset2 = queryset2.filter(query_week_year)
+
+
         serializer = Order_past_per_divsionSerializer(queryset2, many=True)
         return Response(serializer.data)
 
