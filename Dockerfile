@@ -10,3 +10,8 @@ RUN apt update
 RUN apt install -y postgresql-client
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
+
+
+
+
+
